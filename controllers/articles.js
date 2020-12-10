@@ -46,10 +46,10 @@ const createArticle = (req, res, next) => {
 const deleteArticle = (req, res, next) => {
   const { articleId } = req.params;
   Article.findById(articleId)
+    .orFail(() => {
+      throw new NotFoundError(requestErrors.notFound.CARD_MESSAGE);
+    })
     .then((article) => {
-      if (!article) {
-        throw new NotFoundError(requestErrors.notFound.CARD_MESSAGE);
-      }
       /** @description Запретить удалять чужие статьи */
       if (article.owner.toString() !== req.user._id.toString()) {
         throw new ForbiddenError(requestErrors.forbidden.CARD_MESSAGE);
@@ -57,7 +57,13 @@ const deleteArticle = (req, res, next) => {
       Article.findByIdAndRemove(req.params.articleId)
         .then((deletedArticle) => res.send(deletedArticle));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        const error = new BadRequestError(requestErrors.invalid.CARD_MESSAGE);
+        next(error);
+      }
+      next(err);
+    });
 };
 
 module.exports = { getArticles, createArticle, deleteArticle };

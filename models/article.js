@@ -5,27 +5,27 @@ const { validationErrors } = require('../constants/error-messages');
 const articleSchema = new mongoose.Schema({
   keyword: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('keyword')],
   },
   title: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('title')],
   },
   text: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('text')],
   },
   date: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('date')],
   },
   source: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('source')],
   },
   link: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('link')],
     validate: {
       validator: urlValidator,
       message: validationErrors.url.INVALID,
@@ -33,7 +33,7 @@ const articleSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
+    required: [true, validationErrors.requiredField('image')],
     validate: {
       validator: urlValidator,
       message: validationErrors.url.INVALID,
@@ -42,7 +42,7 @@ const articleSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true,
+    required: [true, validationErrors.requiredField('owner')],
   },
 });
 

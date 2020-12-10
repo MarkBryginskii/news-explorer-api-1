@@ -1,4 +1,4 @@
-exports.validationErrors = {
+const validationErrors = {
   email: {
     REQUIRED: "Поле 'E-mail' обязательно",
     LONG: 'Email не должен превышать 40 символов',
@@ -14,13 +14,22 @@ exports.validationErrors = {
   url: {
     INVALID: 'Недопустимый URL',
   },
+  id: {
+    INVALID: 'Невалидный ID',
+  },
+  date: {
+    INVALID: 'Неверный формат даты',
+  },
+  requiredField: (name) => `Поле '${name}' обязательно`,
+  emptyField: (name) => `Поле '${name}' не может быть пустым`,
 };
 
-exports.requestErrors = {
+const requestErrors = {
   notFound: {
     ERROR_NAME: 'DocumentNotFoundError',
     USER_MESSAGE: 'Пользователь не найден',
     URL_MESSAGE: 'Запрашиваемый ресурс не найден',
+    CARD_MESSAGE: 'Статья не найдена',
   },
   validation: {
     ERROR_NAME: 'ValidationError',
@@ -30,16 +39,22 @@ exports.requestErrors = {
     MESSAGE: 'Пользователь с данным e-mail уже зарегистрирован',
   },
   forbidden: {
-    CARD_MESSAGE: 'Нельзя удалять чужие карточки',
+    CARD_MESSAGE: 'Нельзя удалять чужие статьи',
+  },
+  invalid: {
+    USER_MESSAGE: 'Невалидный id пользователя',
+    CARD_MESSAGE: 'Невалидный id статьи',
   },
   serverError: {
     MESSAGE: 'Внутренняя ошибка сервера',
   },
 };
 
-exports.authErrors = {
+const authErrors = {
   unauthorized: {
     LOGIN_MESSAGE: 'Неправильные e-mail или пароль',
     NOTOKEN_MESSAGE: 'Необходима авторизация',
   },
 };
+
+module.exports = { validationErrors, requestErrors, authErrors };

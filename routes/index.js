@@ -9,7 +9,7 @@ const userRouter = require('./users');
 router.use('/articles', articleRouter);
 router.use('/users', userRouter);
 
-router.all('/*', () => {
+router.all('*', () => {
   throw new NotFoundError(requestErrors.notFound.URL_MESSAGE);
 });
 
