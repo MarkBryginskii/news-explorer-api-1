@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const NotFoundError = require('../errors/not-found');
 const { requestErrors } = require('../constants/error-messages');
-// const { celebrate, Joi } = require('celebrate');
 
 const articleRouter = require('./articles');
 const userRouter = require('./users');

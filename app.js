@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 // const cookieParser = require('cookie-parser');
 
 const { errors } = require('celebrate');
-const { requestErrors } = require('./constants/error-messages');
 // const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const routes = require('./routes');
@@ -15,6 +14,7 @@ const routes = require('./routes');
 const app = express();
 const { PORT = 3000, MONGO_URL } = process.env;
 const { MONGO_DEV_URL } = require('./config');
+const { errorHandler } = require('./middleware/error-handler');
 
 mongoose.connect(MONGO_URL || MONGO_DEV_URL, {
   useNewUrlParser: true,
@@ -37,17 +37,9 @@ app.use((req, _res, next) => {
 });
 
 app.use(routes);
-
 // app.use(errorLogger);
 app.use(errors());
-
-app.use((err, _req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500 ? requestErrors.serverError.MESSAGE : message,
-  });
-  next(err);
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
