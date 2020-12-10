@@ -4,14 +4,14 @@ const ForbiddenError = require('../errors/forbidden');
 const NotFoundError = require('../errors/not-found');
 const { requestErrors } = require('../constants/error-messages');
 
-module.exports.getArticles = (_req, res, next) => {
+const getArticles = (_req, res, next) => {
   Article.find({})
     .sort({ createdAt: -1 })
     .then((articles) => res.send(articles))
     .catch(next);
 };
 
-module.exports.createArticle = (req, res, next) => {
+const createArticle = (req, res, next) => {
   const {
     keyword,
     title,
@@ -43,7 +43,7 @@ module.exports.createArticle = (req, res, next) => {
     });
 };
 
-module.exports.deleteArticle = (req, res, next) => {
+const deleteArticle = (req, res, next) => {
   const { articleId } = req.params;
   Article.findById(articleId)
     .then((article) => {
@@ -59,3 +59,5 @@ module.exports.deleteArticle = (req, res, next) => {
     })
     .catch(next);
 };
+
+module.exports = { getArticles, createArticle, deleteArticle };

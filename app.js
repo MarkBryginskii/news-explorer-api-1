@@ -7,16 +7,16 @@ const bodyParser = require('body-parser');
 // const cookieParser = require('cookie-parser');
 
 const { errors } = require('celebrate');
-// const { requestLogger, errorLogger } = require('./middlewares/logger');
-const NotFoundError = require('./errors/not-found');
 const { requestErrors } = require('./constants/error-messages');
+// const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const routes = require('./routes');
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, MONGO_URL } = process.env;
+const { MONGO_DEV_URL } = require('./config');
 
-mongoose.connect('mongodb://127.0.0.1:27017/news-explorer', {
+mongoose.connect(MONGO_URL || MONGO_DEV_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -37,10 +37,6 @@ app.use((req, _res, next) => {
 });
 
 app.use(routes);
-
-app.all('/*', () => {
-  throw new NotFoundError(requestErrors.notFound.URL_MESSAGE);
-});
 
 // app.use(errorLogger);
 app.use(errors());

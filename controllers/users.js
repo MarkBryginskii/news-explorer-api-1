@@ -2,7 +2,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/not-found');
 const { requestErrors } = require('../constants/error-messages');
 
-module.exports.getMe = (req, res, next) => {
+const getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
@@ -12,3 +12,5 @@ module.exports.getMe = (req, res, next) => {
     })
     .catch(next);
 };
+
+module.exports = { getMe };
