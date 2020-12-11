@@ -10,71 +10,69 @@ const { requestErrors } = require('../constants/error-messages');
 const { NODE_ENV, JWT_SECRET } = process.env;
 const { JWT_DEV_SECRET } = require('../config');
 
-const getMe = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => {
-      throw new NotFoundError(requestErrors.notFound.USER_MESSAGE);
-    })
-    .then((user) => {
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        const error = new BadRequestError(requestErrors.invalid.USER_MESSAGE);
-        next(error);
-      }
-      next(err);
-    });
+const getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .orFail(() => {
+        throw new NotFoundError(requestErrors.notFound.USER_MESSAGE);
+      });
+    res.send(user);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      const error = new BadRequestError(requestErrors.invalid.USER_MESSAGE);
+      next(error);
+    }
+    next(err);
+  }
 };
 
-const createUser = (req, res, next) => {
+const createUser = async (req, res, next) => {
   const {
     email,
     password,
     name,
   } = req.body;
-
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => User.create({
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    const user = await User.create({
       email,
       password: hash,
       name,
-    }))
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === requestErrors.validation.ERROR_NAME) {
-        const error = new BadRequestError(err.message.replace(/^.+: /g, ''));
-        next(error);
-      }
-      /** @description ошибка MongoDB, дублирующаяся запись */
-      if (err.code === requestErrors.conflict.MONGO_ERROR_CODE) {
-        const error = new ConflictError(requestErrors.conflict.MESSAGE);
-        next(error);
-      }
-      next(err);
     });
+    res.send(user);
+  } catch (err) {
+    if (err.name === requestErrors.validation.ERROR_NAME) {
+      const error = new BadRequestError(err.message.replace(/^.+: /g, ''));
+      next(error);
+    }
+    /** @description ошибка MongoDB, дублирующаяся запись */
+    if (err.code === requestErrors.conflict.MONGO_ERROR_CODE) {
+      const error = new ConflictError(requestErrors.conflict.MESSAGE);
+      next(error);
+    }
+    next(err);
+  }
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
-
-  return User.findUser(email, password)
-    .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : JWT_DEV_SECRET,
-        { expiresIn: '7d' },
-      );
-      res
-        .cookie('jwt', token, {
-          maxAge: 604800000,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .send(user);
-    })
-    .catch(next);
+  try {
+    const user = await User.findUser(email, password);
+    const token = jwt.sign(
+      { _id: user._id },
+      NODE_ENV === 'production' ? JWT_SECRET : JWT_DEV_SECRET,
+      { expiresIn: '7d' },
+    );
+    res
+      .cookie('jwt', token, {
+        maxAge: 604800000,
+        httpOnly: true,
+        sameSite: true,
+      })
+      .send(user);
+  } catch (err) {
+    next(err);
+  }
 };
 
 const logout = async (_req, res, next) => {

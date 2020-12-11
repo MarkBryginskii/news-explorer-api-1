@@ -4,14 +4,16 @@ const ForbiddenError = require('../errors/forbidden');
 const NotFoundError = require('../errors/not-found');
 const { requestErrors } = require('../constants/error-messages');
 
-const getArticles = (_req, res, next) => {
-  Article.find({})
-    .sort({ createdAt: -1 })
-    .then((articles) => res.send(articles))
-    .catch(next);
+const getArticles = async (_req, res, next) => {
+  try {
+    const articles = await Article.find({}).sort({ createdAt: -1 });
+    res.send(articles);
+  } catch (err) {
+    next(err);
+  }
 };
 
-const createArticle = (req, res, next) => {
+const createArticle = async (req, res, next) => {
   const {
     keyword,
     title,
@@ -23,47 +25,47 @@ const createArticle = (req, res, next) => {
   } = req.body;
   const owner = req.user._id;
 
-  Article.create({
-    keyword,
-    title,
-    text,
-    date,
-    source,
-    link,
-    image,
-    owner,
-  })
-    .then((article) => res.send(article))
-    .catch((err) => {
-      if (err.name === requestErrors.validation.ERROR_NAME) {
-        const error = new BadRequestError(err.message.replace(/^.+: /g, ''));
-        next(error);
-      }
-      next(err);
+  try {
+    const article = await Article.create({
+      keyword,
+      title,
+      text,
+      date,
+      source,
+      link,
+      image,
+      owner,
     });
+    res.send(article);
+  } catch (err) {
+    if (err.name === requestErrors.validation.ERROR_NAME) {
+      const error = new BadRequestError(err.message.replace(/^.+: /g, ''));
+      next(error);
+    }
+    next(err);
+  }
 };
 
-const deleteArticle = (req, res, next) => {
+const deleteArticle = async (req, res, next) => {
   const { articleId } = req.params;
-  Article.findById(articleId)
-    .orFail(() => {
-      throw new NotFoundError(requestErrors.notFound.CARD_MESSAGE);
-    })
-    .then((article) => {
+  try {
+    const article = await Article.findById(articleId)
+      .orFail(() => {
+        throw new NotFoundError(requestErrors.notFound.CARD_MESSAGE);
+      });
       /** @description Запретить удалять чужие статьи */
-      if (article.owner.toString() !== req.user._id.toString()) {
-        throw new ForbiddenError(requestErrors.forbidden.CARD_MESSAGE);
-      }
-      Article.findByIdAndRemove(req.params.articleId)
-        .then((deletedArticle) => res.send(deletedArticle));
-    })
-    .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        const error = new BadRequestError(requestErrors.invalid.CARD_MESSAGE);
-        next(error);
-      }
-      next(err);
-    });
+    if (article.owner.toString() !== req.user._id.toString()) {
+      throw new ForbiddenError(requestErrors.forbidden.CARD_MESSAGE);
+    }
+    const deletedArticle = await Article.findByIdAndRemove(req.params.articleId);
+    res.send(deletedArticle);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      const error = new BadRequestError(requestErrors.invalid.CARD_MESSAGE);
+      next(error);
+    }
+    next(err);
+  }
 };
 
 module.exports = { getArticles, createArticle, deleteArticle };

@@ -29,13 +29,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 // app.use(requestLogger);
 
-app.use((req, _res, next) => {
-  req.user = {
-    _id: '5fcfa51945ed2f795dd4d28c',
-  };
-  next();
-});
-
 app.use(routes);
 // app.use(errorLogger);
 app.use(errors());
