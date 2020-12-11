@@ -13,7 +13,7 @@ const limiter = require('./utils/rate-limiter');
 const routes = require('./routes');
 
 const app = express();
-const { PORT = 3000, MONGO_URL } = process.env;
+const { PORT = 3001, MONGO_URL } = process.env;
 const { MONGO_DEV_URL } = require('./config');
 const { errorHandler } = require('./middleware/error-handler');
 
