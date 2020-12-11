@@ -1,14 +1,26 @@
+const keywords = {
+  EMAIL: 'email',
+  PASSWORD: 'пароль',
+  NAME: 'имя',
+  KEYWORD: 'keyword',
+  TITLE: 'title',
+  TEXT: 'text',
+  DATE: 'date',
+  SOURCE: 'source',
+  LINK: 'link',
+  IMAGE: 'image',
+  OWNER: 'owner',
+};
+
 const validationErrors = {
   email: {
-    REQUIRED: "Поле 'E-mail' обязательно",
-    LONG: 'Email не должен превышать 40 символов',
     INVALID: 'Недопустимый E-mail',
   },
   password: {
-    REQUIRED: "Поле 'Пароль' обязательно",
+    SHORT: 'Минимальная длина пароля - 6 символов',
   },
   name: {
-    SHORT: 'В имени должно быть как минимум 2 символа',
+    SHORT: 'Минимальная длина имени - 2 символа',
     LONG: 'Имя не должно превышать 30 символов',
   },
   url: {
@@ -57,4 +69,6 @@ const authErrors = {
   },
 };
 
-module.exports = { validationErrors, requestErrors, authErrors };
+module.exports = {
+  keywords, validationErrors, requestErrors, authErrors,
+};

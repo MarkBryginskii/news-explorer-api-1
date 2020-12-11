@@ -1,31 +1,31 @@
 const mongoose = require('mongoose');
 const { urlValidator } = require('../utils/validator');
-const { validationErrors } = require('../constants/error-messages');
+const { keywords, validationErrors } = require('../constants/error-messages');
 
 const articleSchema = new mongoose.Schema({
   keyword: {
     type: String,
-    required: [true, validationErrors.requiredField('keyword')],
+    required: [true, validationErrors.requiredField(keywords.KEYWORD)],
   },
   title: {
     type: String,
-    required: [true, validationErrors.requiredField('title')],
+    required: [true, validationErrors.requiredField(keywords.TITLE)],
   },
   text: {
     type: String,
-    required: [true, validationErrors.requiredField('text')],
+    required: [true, validationErrors.requiredField(keywords.TEXT)],
   },
   date: {
     type: String,
-    required: [true, validationErrors.requiredField('date')],
+    required: [true, validationErrors.requiredField(keywords.DATE)],
   },
   source: {
     type: String,
-    required: [true, validationErrors.requiredField('source')],
+    required: [true, validationErrors.requiredField(keywords.SOURCE)],
   },
   link: {
     type: String,
-    required: [true, validationErrors.requiredField('link')],
+    required: [true, validationErrors.requiredField(keywords.LINK)],
     validate: {
       validator: urlValidator,
       message: validationErrors.url.INVALID,
@@ -33,7 +33,7 @@ const articleSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, validationErrors.requiredField('image')],
+    required: [true, validationErrors.requiredField(keywords.IMAGE)],
     validate: {
       validator: urlValidator,
       message: validationErrors.url.INVALID,
@@ -42,7 +42,7 @@ const articleSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: [true, validationErrors.requiredField('owner')],
+    required: [true, validationErrors.requiredField(keywords.OWNER)],
   },
 });
 
