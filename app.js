@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middleware/logger');
+const limiter = require('./utils/rate-limiter');
 
 const routes = require('./routes');
 
@@ -33,8 +34,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(requestLogger);
+app.use(limiter);
 
 app.use(routes);
+
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
