@@ -2,12 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
-// const cors = require('cors');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const { errors } = require('celebrate');
-// const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { requestLogger, errorLogger } = require('./middleware/logger');
 
 const routes = require('./routes');
 
@@ -23,14 +23,19 @@ mongoose.connect(MONGO_URL || MONGO_DEV_URL, {
   useUnifiedTopology: true,
 });
 
+app.use('*', cors({
+  origin: '*',
+  credentials: true,
+}));
+
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-// app.use(requestLogger);
+app.use(requestLogger);
 
 app.use(routes);
-// app.use(errorLogger);
+app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
 
