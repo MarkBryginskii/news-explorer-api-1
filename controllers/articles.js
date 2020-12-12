@@ -57,7 +57,7 @@ const deleteArticle = async (req, res, next) => {
     if (article.owner.toString() !== req.user._id.toString()) {
       throw new ForbiddenError(requestErrors.forbidden.CARD_MESSAGE);
     }
-    const deletedArticle = await Article.findByIdAndRemove(req.params.articleId);
+    const deletedArticle = await article.remove();
     res.send(deletedArticle);
   } catch (err) {
     if (err.kind === 'ObjectId') {
